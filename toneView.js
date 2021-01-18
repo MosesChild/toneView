@@ -11,7 +11,6 @@ const toneView=function(toneObj) {
     var view=simpleTable(toneObj.get()),
     caption=view.table.createCaption();
     caption.innerText = toneObj.name;
-    console.log("toneView initialized", view);
     view.listener=new ToneViewListener(view.table,toneObj);
     return view;
 } 
@@ -22,15 +21,9 @@ const ToneViewListener = function (element, toneObj) {
         let attribute=event.target.className
         let value = event.target.value,
         [base, ...address] = event.target.parentElement.parentElement.className.split(' ');
-        address.push(attribute);
-        let set = getSetPartial(toneObj, address);
+        let inner = getInnerObject(toneObj, address);
+        inner.set({[attribute]: value});
 
-        console.log('ToneViewListener',address);
-        try {
-            set(value);
-        } catch (error) {
-            console.log("eventlistener set(value) failed", error)
-        }
     }
     this.scroll = function (event) {
         console.log('ToneViewScroll', event, event.target);
@@ -42,28 +35,12 @@ const ToneViewListener = function (element, toneObj) {
 
 
 
-const getSetPartial = (toneObj, propertyAddress) => {
-    // returns the correct 'partial' for value.
-    let property1 = propertyAddress[0],
-        property2 = propertyAddress[1],
-        property3 = propertyAddress[2];
-    console.log("property", property1);
+const getInnerObject = (toneObj, addressArray) => {
+    let innerObject = addressArray.reduce((accum, key)=>accum[key], toneObj);
 
-    if (property3) {
-        return (value) => toneObj[property1][property2].set({
-            [property3]: value
-        });
-    } else if (property2) {
-        return (value) => toneObj[property1].set({
-            [property2]: value
-        });
-    } else {
-        return (value) => toneObj.set({
-            [property1]: value
-        });
-    }
+    return innerObject
 };
 
 export {
-    toneView, awaitTone, interpretRowId, getSetPartial
+    toneView, awaitTone
 };
