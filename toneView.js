@@ -17,13 +17,15 @@ const toneView=function(toneObj) {
 } 
 
 const ToneViewListener = function (element, toneObj) {
-    
     this.name = toneObj.name+"Listener";
     this.onchange = function (event) {
-        console.log('ToneViewListener')
+        let attribute=event.target.className
         let value = event.target.value,
-            address = interpretRowId(event.target.id),
-            set = getSetPartial(toneObj, address);
+        [base, ...address] = event.target.parentElement.parentElement.className.split(' ');
+        address.push(attribute);
+        let set = getSetPartial(toneObj, address);
+
+        console.log('ToneViewListener',address);
         try {
             set(value);
         } catch (error) {
@@ -38,10 +40,7 @@ const ToneViewListener = function (element, toneObj) {
     document.addEventListener('wheel', this.scroll.bind(this), {passive: true} );
 }
 
-const interpretRowId = (rowId) => {
-    const propertyAddress = rowId.split('_');
-    return propertyAddress;
-};
+
 
 const getSetPartial = (toneObj, propertyAddress) => {
     // returns the correct 'partial' for value.
