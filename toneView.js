@@ -3,16 +3,12 @@ import {
      getTableRowsByClassNames,
 } from "../simpleTable/simpleTable.js";
 
-async function awaitTone() {
-     await Tone.start();
-     console.log("audio is ready");
-     document.body.removeEventListener("mousedown", awaitTone);
-}
+import {makeSelectList, searchObject} from './uncommitted/makeView.js';
+
 
 function clickButton(button) {
      let eventObj = document.createEvent("Events");
      eventObj.initEvent("click", true, true);
-     console.log(button, "event?", eventObj);
      button.dispatchEvent(eventObj);
 }
 
@@ -26,8 +22,8 @@ function openInnerButtons(buttons) {
           ) {
                //  then buttons will open one at a time,
                clickButton(button); // opens object
-               clickButton(button); // closes object immediately as the next level has been created (just not displayed1)
-               console.log(button);
+               clickButton(button); // closes object immediately as the next level has been created (just not displayed!)
+               //console.log(button);
                // then you must only select the newly created rows
                let nextRow = button.parentElement.parentElement.nextSibling; // find the newly opened next row and use its classname to get new address...
                let classNames = nextRow.className.split(" ");
@@ -38,7 +34,7 @@ function openInnerButtons(buttons) {
                ) => outerElement.querySelector("button"));
 
                innerButtons = innerButtons.filter(
-                    // remove all null values.
+                    // remove all null values from nodeMap.
                     (member) => member !== null
                );
                if (innerButtons.length > 0) {
@@ -49,28 +45,68 @@ function openInnerButtons(buttons) {
      });
 }
 const constraints={
-    'vibratoAmount': {min: 0, max: 1 }, 
+    'vibratoAmount': {min: 0, max: 1, step: .01 }, 
     'harmonicity':{min: -1 },
     'vibratoRate':{min: 0, max: '127'},
-    'volume':{min: -64, max: 64},
+    'volume':{min: -Infinity, max: Infinity},
     'detune':{step: 1 },
-    'portamento':{min: 0, max:12.7}
+    'portamento':{min: 0, max:12.7, step: .1}
 }
-function applyInputConstraints(){
+function applyInputClass(){
     //Object.keys(constraints).forEach(constraint=>{
-    let inputs =   document.querySelectorAll('inputs[type=number]')
-    //})
-    console.log(inputs)
+    let matchString = Object.keys(constraints);
+    let inputs =   document.querySelectorAll("input");
+    inputs.forEach(input=>{
+        if (input.dataset.address){
+            let [...address]= input.dataset.address.split('_');
+            input.classList.add(address.pop());
+        }
+    })
+}
+function changeToSelectList(element, choiceArray){
+    let parentCell=element.parentElement;
+    let choice=`[value='${element.value}']`;
+    //console.log(choice, choiceArray)
+    parentCell.removeChild(element);
+
+    let selectList = makeSelectList(choiceArray);
+    selectList.dataset.address=element.dataset.address;
+    parentCell.appendChild(selectList);
+    let option= selectList.querySelector('option'+choice);
+    selectList.selectedIndex=option.index;
+    //console.log("current selectList selected option is", option, option.index);
 }
 
+function applyConstraints(){
+    let constraintNames=Object.keys(constraints);
+    constraintNames.forEach(cName=>{
+        let inputs=document.getElementsByClassName(cName);
+        [...inputs].forEach(input=>Object.assign(input, constraints[cName]))
+        //console.log(cName, );
+    })
+}
 function initializeToneView(viewObj){
      // fully open object!
      let buttons = viewObj.querySelectorAll("button");
      openInnerButtons(buttons);
-     // add number restraints
-    applyInputConstraints()
+    applyInputClass();
+    applyConstraints();
+    applySelectLists();
 }
+const lists={
+    attackCurve: ["linear", "exponential" ,"sine", "cosine", "bounce", "ripple", "step"],
+    decayCurve: ["linear", "exponential"] ,
+    releaseCurve: ["linear", "exponential" ,"sine", "cosine", "bounce", "ripple", "step"]
+}
+function applySelectLists(){
+    let selectArrays=Object.keys(lists);
+    selectArrays.forEach(array=>{
+        let currentClass=document.querySelectorAll(`.${array}`);
+       // console.log(currentClass, lists[array]);
+        [...currentClass].forEach(textInput=>changeToSelectList(textInput, lists[array]));
+    })
 
+}
 
 const getInnerObject = (toneObj, addressArray) => {
      let innerObject = addressArray.reduce((accum, key) => accum[key], toneObj);
@@ -80,24 +116,17 @@ const getInnerObject = (toneObj, addressArray) => {
 const ToneViewListener = function (element, toneObj) {
      this.name = toneObj.name + "Listener";
      this.onchange = function (event) {
-          let [base, ...address] = event.target.dataset.address.split("_");
-          let attribute = address.pop();
-          let value = event.target.value;
-          let inner = getInnerObject(toneObj, address);
-          let previousValue = inner[attribute];
-          try {
-               inner.set({ [attribute]: value });
-          } catch (error) {
-               if (error instanceof RangeError) {
-                    if (previousValue > value) {
-                         inner.set({ [attribute]: previousValue });
-                         event.target.setAttribute("min", previousValue);
-                    } else {
-                         event.target.setAttribute("max", previousValue);
-                    }
-                    console.log(event.target, previousValue, value);
-               }
-          }
+         let [base, ...address] = event.target.dataset.address.split("_");
+         let attribute = address.pop();
+         let inner = getInnerObject(toneObj, address);
+         let previousValue = inner[attribute];
+         let target=event.target, value=target.value
+
+        if (target.selectedIndex){
+            value=target.options[target.selectedIndex].value;    // redefine value for select lists...
+        }
+        inner.set({ [attribute]: value });
+        console.log(inner, value);
      };
      this.scroll = function (event) {
           console.log("ToneViewScroll", event, event.target);
@@ -114,10 +143,10 @@ const toneView = function (toneObj) {
      var view = simpleTable(toneObj.get()),
           caption = view.table.createCaption();
      caption.innerText = toneObj.name;
-    initializeToneView(view.table);
+     initializeToneView(view.table);
      view.listener = new ToneViewListener(view.table, toneObj);
      return view;
 };
 
 
-export { toneView, awaitTone };
+export { toneView };
