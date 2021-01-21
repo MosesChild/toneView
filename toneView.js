@@ -3,7 +3,7 @@ import {
      getTableRowsByClassNames,
 } from "../simpleTable/simpleTable.js";
 
-import {makeSelectList, searchObject} from './uncommitted/makeView.js';
+import {makeSelectList} from './makeView.js';
 
 
 function clickButton(button) {
@@ -65,14 +65,14 @@ function applyInputClass(){
 }
 function changeToSelectList(element, choiceArray){
     let parentCell=element.parentElement;
-    let choice=`[value='${element.value}']`;
+    let choice=`option[value='${element.value}']`;
     //console.log(choice, choiceArray)
     parentCell.removeChild(element);
 
     let selectList = makeSelectList(choiceArray);
     selectList.dataset.address=element.dataset.address;
     parentCell.appendChild(selectList);
-    let option= selectList.querySelector('option'+choice);
+    let option= selectList.querySelector(choice);
     selectList.selectedIndex=option.index;
     //console.log("current selectList selected option is", option, option.index);
 }
@@ -96,8 +96,15 @@ function initializeToneView(viewObj){
 const lists={
     attackCurve: ["linear", "exponential" ,"sine", "cosine", "bounce", "ripple", "step"],
     decayCurve: ["linear", "exponential"] ,
-    releaseCurve: ["linear", "exponential" ,"sine", "cosine", "bounce", "ripple", "step"]
+    releaseCurve: ["linear", "exponential" ,"sine", "cosine", "bounce", "ripple", "step"],
+   
 }
+const OmniOscillatorTypes= ["sine", "square", "triangle", "sawtooth", "fatsine" , "fatsquare" , "fatsawtooth" , "fattriangle" , "fatcustom" , "fmsine" , "fmsquare" , "fmsawtooth" , "fmtriangle" , "fmcustom" , "amsine" , "amsquare" , "amsawtooth" , "amtriangle" , "amcustom", "pulse" , "pwm"]
+
+const filterTypes=["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "notch", "allpass", "peaking"];
+
+
+
 function applySelectLists(){
     let selectArrays=Object.keys(lists);
     selectArrays.forEach(array=>{
@@ -105,7 +112,14 @@ function applySelectLists(){
        // console.log(currentClass, lists[array]);
         [...currentClass].forEach(textInput=>changeToSelectList(textInput, lists[array]));
     })
-
+    // needs to do check on oscillator or possible errors will occur.
+    let typeLists=document.querySelectorAll('.type');
+    let oscillators=[...typeLists].filter(element=>element.dataset.address.indexOf('oscillator_type')>-1)
+    let filters=[...typeLists].filter(element=>element.dataset.address.indexOf('filter_type')>-1)
+    oscillators.forEach(oscillator=>{changeToSelectList(oscillator, OmniOscillatorTypes)})
+    filters.forEach(filter=>{changeToSelectList(filter, filterTypes)})
+      //   if (oscillator.)
+    
 }
 
 const getInnerObject = (toneObj, addressArray) => {
