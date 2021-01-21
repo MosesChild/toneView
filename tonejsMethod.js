@@ -10,8 +10,14 @@ var metal=new Tone.MetalSynth()
 .toDestination()
 var trigger1=makeTrigger(synth);
 var trigger2=makeTrigger(metal);
-toneView(synth);
-toneView(metal);
+var synthView=new toneView(synth);
+console.log(synthView)
+
+let initialize = createElement('button', {textContent : "initialize", onclick:(e)=>{synthView.initialize()}})
+document.body.appendChild(initialize);
+//synthView.initialize()
+//setTimeout(synthView.initialize, 2000);
+//toneView(metal);
 
 /*********************get usable methods 
 var methods=getMethods(synth).filter(value => value.indexOf('_')<0 )
