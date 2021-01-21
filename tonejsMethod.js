@@ -1,12 +1,8 @@
 
 
-import { createElement, makeTrigger, makeSelectList, SelectListener} from "../midi_browser/home_modules/makeView.js";
-import { toneView, awaitTone } from "./toneView.js";
+import { createElement, makeTrigger, makeSelectList, SelectListener} from "./makeView.js";
+import { toneView } from "./toneView.js";
 import { getShallowMethods, getMethods } from "./methodExperiments.js";
-
-
-
-document.body.addEventListener('mousedown', awaitTone);
 
 var synth=new Tone.FMSynth()
 .toDestination()
