@@ -22,12 +22,14 @@ function encapsulate() { // creates a group of elements inside a div. Will apply
      return div;
 }
 
-function makeSelectList(_array) {
+function makeSelectList(_array, value) {
+     var choice=_array.indexOf(value);
      var options = _array.map((entry) => createElement( "option", { value: entry, textContent: entry })); 
      var select = createElement("select");
      options.forEach((option) => {
           select.appendChild(option);
      });
+     select.selectedIndex=choice;
      //console.log(select);
      document.body.append(select);
      return select;
