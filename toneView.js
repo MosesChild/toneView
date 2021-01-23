@@ -53,9 +53,7 @@ const ToneViewListener = function (element, toneViewObj) {
 };
 
 const toneView = function (toneObject) {
-     console.log(this, "this");
      // create permanent toneView object.
-
      this.toneObject=toneObject;
      let parent;
      this.initialize = () => {
@@ -64,15 +62,10 @@ const toneView = function (toneObject) {
           console.log('initialized called', this);          
             var caption = this.simpleTable.table.createCaption();
                caption.innerText = toneObject.name;
-               //initializeToneView(view.table);
+               initializeToneView(view.table);
                this.listener = new ToneViewListener(this.simpleTable.table, this);
           
      };
-     this.reset=()=>{
-               parent=view.table.parentElement;
-               console.log('parent', parent)
-               parent.removeChild(view.table);
-     }
      this.initialize();
      return this;
 };

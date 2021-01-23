@@ -1,7 +1,6 @@
 import {
     getTableRowsByClassNames,
 } from "../simpleTable/simpleTable.js";
-import {makeSelectList} from './makeView.js';
 
 function clickButton(button) {
     let eventObj = document.createEvent("Events");
@@ -85,9 +84,11 @@ function applyInputClass(){
     const filterTypes=["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "notch", "allpass", "peaking"];
     
     const selectListObjectArray=[{address: "oscillator_type", choices: OmniOscillatorTypes},
-    {address: 'envelope_attackCurve', choices: lists.attackCurve}, 
-    {address: 'envelope_decayCurve', choices: lists.decayCurve}, 
-    {address: 'envelope_releaseCurve', choices: lists.releaseCurve},
-    {address: 'filter_type', choices: filterTypes }
+    {address: 'attackCurve', choices: lists.attackCurve}, 
+    {address: 'decayCurve', choices: lists.decayCurve}, 
+    {address: 'releaseCurve', choices: lists.releaseCurve},
+    {address: 'filter_type', choices: filterTypes },
+    {address: 'modulation_type', choices: OmniOscillatorTypes },
+
     ]; 
     export {initializeToneView, clickButton, selectListObjectArray};

@@ -13,8 +13,9 @@ var trigger2=makeTrigger(metal);
 var synthView=new toneView(synth);
 console.log(synthView)
 
-let initialize = createElement('button', {textContent : "initialize", onclick:(e)=>{synthView.initialize()}})
+let initialize = createElement('button', {textContent : "log", onclick:(e)=>{synthView.logState()}})
 document.body.appendChild(initialize);
+
 //synthView.initialize()
 //setTimeout(synthView.initialize, 2000);
 //toneView(metal);
