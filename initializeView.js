@@ -69,7 +69,7 @@ function applyInputClass(){
     function initializeToneView(viewObj){
         // fully open object!
         let buttons = viewObj.querySelectorAll("button");
-        openInnerButtons(buttons);
+        //openInnerButtons(buttons);
         applyInputClass();
         applyConstraints();
     }
@@ -88,7 +88,11 @@ function applyInputClass(){
     {address: 'decayCurve', choices: lists.decayCurve}, 
     {address: 'releaseCurve', choices: lists.releaseCurve},
     {address: 'filter_type', choices: filterTypes },
+    {address: 'BiquadFilter_type', choices: filterTypes },
     {address: 'modulation_type', choices: OmniOscillatorTypes },
+    {address: 'trueOp_type', choices: OmniOscillatorTypes },
+    {address: 'OmniOscillator_type', choices: OmniOscillatorTypes },
+    
 
     ]; 
     export {initializeToneView, clickButton, selectListObjectArray};
